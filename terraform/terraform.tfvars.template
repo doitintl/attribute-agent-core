@@ -1,0 +1,119 @@
+# =============================================================================
+# Terraform Variables Template
+# =============================================================================
+# Copy this file to terraform.tfvars and fill in your values.
+# DO NOT commit terraform.tfvars to version control (add to .gitignore).
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# General Configuration
+# -----------------------------------------------------------------------------
+
+aws_region  = "us-east-1"
+name_prefix = "attribute-agentcore"
+
+default_tags = {
+  Project     = "attribute-agentcore"
+  Environment = "dev"
+  ManagedBy   = "terraform"
+}
+
+# -----------------------------------------------------------------------------
+# Network Configuration
+# -----------------------------------------------------------------------------
+
+# Leave empty to use default VPC
+vpc_id = ""
+
+# Leave empty to auto-discover subnets from VPC
+subnet_ids = []
+
+# Create a dedicated security group with correct egress rules (recommended)
+create_security_group = true
+
+# Allow HTTP (port 80) egress for package updates
+allow_http_egress = true
+
+# Availability zones for subnet discovery
+availability_zones = ["us-east-1a", "us-east-1b", "us-east-1c"]
+
+# -----------------------------------------------------------------------------
+# Capacity Provider Configuration
+# -----------------------------------------------------------------------------
+
+# Operating system: LINUX_X86_64 or LINUX_ARM64
+operating_system = "LINUX_X86_64"
+
+# Allowed instance types (up to 30)
+allowed_instance_types = ["c6i.large", "c6a.large", "c7i.large"]
+
+# EBS volume configuration
+ebs_volume_size = 30
+ebs_volume_type = "gp3"
+
+# Auto-scaling limits
+capacity_min = 0
+capacity_max = 10
+
+# -----------------------------------------------------------------------------
+# Agent Runtime Configuration
+# -----------------------------------------------------------------------------
+
+# Build and upload agent from local source (recommended)
+# Set to true to build from ../agent directory, false to use existing S3 artifact
+build_agent_artifact = true
+
+# S3 bucket for agent artifacts (REQUIRED - must exist in your region)
+agent_s3_bucket = "YOUR_S3_BUCKET_NAME"
+
+# S3 prefix for the agent artifact (used when build_agent_artifact = true)
+agent_s3_prefix = "agent"
+
+# Artifact name (without .zip extension)
+agent_artifact_name = "agent"
+
+# Custom agent source directory (optional - defaults to ../agent)
+# agent_source_dir = "/path/to/your/agent"
+
+# S3 key to existing artifact (only used when build_agent_artifact = false)
+# agent_s3_key = "agent/agent.zip"
+
+# Python runtime version
+python_runtime = "PYTHON_3_13"
+
+# Entry point file(s)
+agent_entry_point = ["agent.py"]
+
+# Custom headers to pass to the agent (for multi-tenant support)
+request_header_allowlist = ["x-tenant-id"]
+
+# Session configuration
+session_idle_timeout = 900   # 15 minutes
+session_max_duration  = 86400 # 24 hours
+
+# -----------------------------------------------------------------------------
+# Attribute Sensor Configuration
+# -----------------------------------------------------------------------------
+
+# DoiT Attribute sensor token (REQUIRED - from Attribute Dashboard)
+# Get this from: Attribute Dashboard > Setup > API Tokens
+sensor_token = "YOUR_ATTRIBUTE_TOKEN_HERE"
+
+# Secrets Manager secret name
+sensor_secret_name = "attribute/sensor-token"
+
+# Workload name shown in Attribute dashboard
+sensor_workload_name = "agentcore-agent"
+
+# Sensor memory limit in bytes (default 500MB)
+sensor_memory_limit = "524288000"
+
+# -----------------------------------------------------------------------------
+# Lambda Configuration
+# -----------------------------------------------------------------------------
+
+# Lambda timeout in seconds
+lambda_timeout = 300
+
+# Lambda memory size in MB
+lambda_memory_size = 256
