@@ -4,3 +4,4 @@ zip-sensor-spike/.build/weather-saas-zip-sensor.zip
 zip-sensor-spike/.build/.runtime-arn
 zip-sensor-spike/.build/.key
 zip-sensor-spike/.build/.bucket
+container-deploy/
