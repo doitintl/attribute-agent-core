@@ -4,6 +4,39 @@ Terraform-based infrastructure for deploying **DoiT Attribute EC2 sensor** on **
 
 This module automatically installs the Attribute sensor on AgentCore-managed EC2 instances using EventBridge + Lambda + SSM, enabling cost observability for AI agent workloads.
 
+## Background
+
+Amazon Bedrock AgentCore Runtime Instances (launched August 2026) provides persistent EC2 infrastructure for AI agents. When an agent session starts, AgentCore launches EC2 instances in your account that can persist for up to 14 days. This creates an opportunity to install the DoiT Attribute sensor on these instances to gain visibility into agent compute costs.
+
+### How AgentCore Runtime Instances Work
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                     Amazon Bedrock AgentCore                         │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│  ┌─────────────────────┐     ┌──────────────────────────────────┐  │
+│  │   Capacity Provider │────▶│  EC2 Instance (your account)     │  │
+│  ├─────────────────────┤     ├──────────────────────────────────┤  │
+│  │ • OS: Linux x86/ARM │     │ • Agent Runtime (container/zip)  │  │
+│  │ • Instance types    │     │ • Shared session storage         │  │
+│  │ • VPC/Subnets/SGs  │     │ • Up to 14 days lifetime         │  │
+│  │ • EBS volumes       │     │ • Managed by AgentCore           │  │
+│  │ • IAM permissions   │     └──────────────────────────────────┘  │
+│  └─────────────────────┘                                            │
+│                                                                      │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+### Attribute Sensor Requirements
+
+| Requirement | Details |
+|-------------|---------|
+| Kernel version | 5.10 or newer |
+| Architecture | `x86_64` or `arm64` |
+| Privileges | `sudo` access (handled by SSM) |
+| Token | Per-account installation token from Attribute Dashboard |
+
 ## Demo Agent
 
 The included `agent/` directory contains a **Weather SaaS** demo application that simulates a multi-tenant AI agent. It:
@@ -304,5 +337,7 @@ terraform destroy
 ## References
 
 - [Amazon Bedrock AgentCore Documentation](https://docs.aws.amazon.com/bedrock-agentcore/)
-- [DoiT Attribute EC2 Sensor](https://help.doit.com/docs/attribute/)
+- [AgentCore Runtime Instances - How it Works](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-instances-how-it-works.html)
+- [AWS Blog: Runtime Instances](https://aws.amazon.com/blogs/aws/runtime-instances-persistent-compute-for-production-ai-agents-on-amazon-bedrock-agentcore/)
+- [DoiT Attribute EC2 Sensor Installation](https://help.doit.com/docs/attribute/integrations/cloud-integrations/aws/attribute-ec2-sensor-installation)
 - [AgentCore Request Header Allowlist](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-header-allowlist.html)
