@@ -1,0 +1,16 @@
+{
+  "_description": "Phase 5 capability fixture: material.preset across all four texture builders (concrete/brick/brushed_metal/marble) plus a few flat (non-textured) presets. Two real bugs were found and fixed using this fixture: (1) the texture-builder dispatch was never actually wired into setup_objects, so every preset silently rendered flat -- confirmed via a completely flat close-up render, then fixed; (2) TexBrick patterned as vertical stripes on a wall face (the exact 'wall UV' problem the Tier-2 plan's Phase 6 warns about, surfacing here too) until wired through a synthetic X+Y wall coordinate; (3) an initial marble attempt fed noise directly into Voronoi's Vector input, collapsing the 3D coordinate to a 1D diagonal and rendering flat -- replaced with the standard banded-Wave-distorted-by-noise marble recipe.",
+  "camera": {"location": [8.0, -12.0, 6.0], "rotation": [1.25, 0.0, 0.6], "focal_length": 40},
+  "environment": {"type": "SKY", "preset": "golden_hour"},
+  "lighting": [],
+  "objects": [
+    {"name": "Concrete", "primitive": "CUBE", "location": [-3.0, 0, 1], "material": {"preset": "concrete"}},
+    {"name": "Brick", "primitive": "CUBE", "location": [-1.0, 0, 1], "material": {"preset": "brick"}},
+    {"name": "Brushed", "primitive": "CUBE", "location": [1.0, 0, 1], "material": {"preset": "brushed_metal"}},
+    {"name": "Marble", "primitive": "SPHERE", "location": [3.0, 0, 1], "material": {"preset": "marble"}},
+    {"name": "Chrome", "primitive": "SPHERE", "location": [5.0, 0, 1], "material": {"preset": "chrome"}},
+    {"name": "Glass", "primitive": "CUBE", "location": [7.0, 0, 1], "material": {"preset": "glass"}},
+    {"name": "Ground", "primitive": "PLANE", "location": [0, 0, 0], "scale": [20, 10, 1], "material": {"preset": "asphalt"}}
+  ],
+  "render_settings": {"samples": 128, "resolution_x": 1600, "resolution_y": 500}
+}

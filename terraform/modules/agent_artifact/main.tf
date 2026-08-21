@@ -33,8 +33,9 @@ data "aws_region" "current" {}
 locals {
   # Hash the source files to detect changes
   agent_source_hash = sha256(join("", [
-    filesha256(var.agent_source_dir != "" ? "${var.agent_source_dir}/agent.py" : "${path.module}/../../../agent/agent.py"),
-    filesha256(var.agent_source_dir != "" ? "${var.agent_source_dir}/requirements.txt" : "${path.module}/../../../agent/requirements.txt"),
+    filesha256(var.agent_source_dir != "" ? "${var.agent_source_dir}/agent.py" : "${path.module}/../../../agent-3d-render/agent.py"),
+    filesha256(var.agent_source_dir != "" ? "${var.agent_source_dir}/blender_runtime.py" : "${path.module}/../../../agent-3d-render/blender_runtime.py"),
+    filesha256(var.agent_source_dir != "" ? "${var.agent_source_dir}/requirements.txt" : "${path.module}/../../../agent-3d-render/requirements.txt"),
   ]))
   
   # Build directory for packaging
@@ -46,8 +47,8 @@ locals {
   # S3 key for the artifact
   s3_key = "${var.s3_prefix}/${var.artifact_name}.zip"
   
-  # Source directory (use provided or default to ../../../agent)
-  source_dir = var.agent_source_dir != "" ? var.agent_source_dir : "${path.module}/../../../agent"
+  # Source directory (use provided or default to ../../../agent-3d-render)
+  source_dir = var.agent_source_dir != "" ? var.agent_source_dir : "${path.module}/../../../agent-3d-render"
 }
 
 # -----------------------------------------------------------------------------
@@ -88,6 +89,13 @@ resource "null_resource" "build_agent" {
       # Copy agent source
       echo "Copying agent source..."
       cp "${local.source_dir}/agent.py" "$BUILD_DIR/package/"
+      cp "${local.source_dir}/blender_runtime.py" "$BUILD_DIR/package/"
+      
+      # Copy HDRI assets if they exist
+      if [ -d "${local.source_dir}/hdri_assets" ]; then
+        echo "Copying HDRI assets..."
+        cp -r "${local.source_dir}/hdri_assets" "$BUILD_DIR/package/"
+      fi
       
       # Create zip file - exclude __pycache__ directories to avoid Python version incompatibility
       echo "Creating zip archive..."

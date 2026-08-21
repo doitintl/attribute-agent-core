@@ -1,0 +1,16 @@
+# Build artifacts
+.build-zip/
+
+# Local Blender install for exact-prod-parity testing (see scripts/render_local.py) -- ~1GB,
+# fetched on demand, never committed.
+.blender/
+
+# Local render harness output (scripts/render_local.py) -- regenerated every run, not source.
+.render-local-out/
+
+# Test script output (per-run results, tenant-specific, not source)
+scripts/tenant_test_results.json
+
+# Python
+__pycache__/
+*.pyc

@@ -192,6 +192,12 @@ variable "session_max_duration" {
   default     = 86400  # 24 hours
 }
 
+variable "agent_environment_variables" {
+  description = "Environment variables to pass to the agent runtime"
+  type        = map(string)
+  default     = {}
+}
+
 # -----------------------------------------------------------------------------
 # Attribute Sensor Configuration
 # -----------------------------------------------------------------------------

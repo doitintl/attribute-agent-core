@@ -1,0 +1,17 @@
+{
+  "_description": "Phase 3 capability fixture: object rotation (degrees), auto-bevel on a CUBE, smooth shading + high tessellation on a SPHERE, and the bevel-width clamp on a deliberately thin slab (scale z=0.1) that would self-intersect with an unclamped bevel width.",
+  "camera": {"location": [7.0, -6.0, 5.0], "rotation": [1.15, 0.0, 0.8], "focal_length": 50, "sensor_width": 36},
+  "environment": {"type": "SKY", "preset": "golden_hour"},
+  "lighting": [],
+  "objects": [
+    {"name": "RotatedCube", "primitive": "CUBE", "location": [-1.5, 0, 1], "scale": [1, 1, 1], "rotation": [0, 0, 20],
+     "material": {"base_color": [0.8, 0.2, 0.2], "metallic": 0.1, "roughness": 0.3}},
+    {"name": "SmoothSphere", "primitive": "SPHERE", "location": [1.5, 0, 1], "scale": [1, 1, 1],
+     "material": {"base_color": [0.2, 0.5, 0.8], "metallic": 0.1, "roughness": 0.15}},
+    {"name": "ThinSlab", "primitive": "CUBE", "location": [0, 2, 0.2], "scale": [1.5, 1.5, 0.1],
+     "material": {"base_color": [0.7, 0.7, 0.7], "metallic": 0.0, "roughness": 0.5}},
+    {"name": "Ground", "primitive": "PLANE", "location": [0, 0, 0], "scale": [10, 10, 1],
+     "material": {"base_color": [0.3, 0.3, 0.32], "metallic": 0.0, "roughness": 0.6}}
+  ],
+  "render_settings": {"samples": 128, "resolution_x": 1280, "resolution_y": 720}
+}

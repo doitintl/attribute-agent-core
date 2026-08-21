@@ -1,0 +1,14 @@
+{
+  "_description": "Phase 4 capability fixture: empty lighting[] with lighting_rig='studio_3point' -- verifies a lazily-authored scene (geometry only, no lights at all) still gets a competent 3-point lighting setup automatically.",
+  "camera": {"location": [7.0, -6.0, 5.0], "rotation": [1.15, 0.0, 0.8]},
+  "environment": {"type": "COLOR", "color": [0.02, 0.02, 0.03], "strength": 0.05},
+  "lighting": [],
+  "lighting_rig": "studio_3point",
+  "objects": [
+    {"name": "Subject", "primitive": "SPHERE", "location": [0, 0, 1], "scale": [1.2, 1.2, 1.2],
+     "material": {"base_color": [0.75, 0.15, 0.15], "metallic": 0.3, "roughness": 0.25}},
+    {"name": "Ground", "primitive": "PLANE", "location": [0, 0, 0], "scale": [10, 10, 1],
+     "material": {"base_color": [0.3, 0.3, 0.32], "metallic": 0.0, "roughness": 0.6}}
+  ],
+  "render_settings": {"samples": 128, "resolution_x": 1280, "resolution_y": 720}
+}

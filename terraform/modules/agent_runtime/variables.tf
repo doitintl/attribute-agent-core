@@ -56,3 +56,9 @@ variable "session_max_duration" {
   type        = number
   default     = 86400
 }
+
+variable "environment_variables" {
+  description = "Environment variables to pass to the agent runtime"
+  type        = map(string)
+  default     = {}
+}

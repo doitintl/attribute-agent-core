@@ -220,6 +220,15 @@ resource "aws_iam_role_policy" "agent_runtime" {
         Resource = "arn:aws:s3:::${var.agent_s3_bucket}/${var.agent_s3_key_prefix}"
       },
       {
+        Sid    = "S3WriteOutputs"
+        Effect = "Allow"
+        Action = [
+          "s3:PutObject",
+          "s3:PutObjectAcl"
+        ]
+        Resource = "arn:aws:s3:::${var.agent_s3_bucket}/render3d-agent/outputs/*"
+      },
+      {
         Sid    = "CloudWatchLogs"
         Effect = "Allow"
         Action = [

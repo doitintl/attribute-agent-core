@@ -1,0 +1,11 @@
+{
+  "_description": "Phase 8 capability fixture: environment.type='HDRI' with a valid catalog name ('clear_sky'). render_local.py resolves this locally from hdri_assets/ (mirroring agent.py's _ensure_hdri, minus S3 -- see render_local.py's load_fixture_scene). A chrome sphere makes the HDRI's actual content (real photographed clouds/sun, not a procedural approximation) directly visible in its reflection.",
+  "camera": {"location": [7.0, -6.0, 5.0], "rotation": [1.15, 0.0, 0.8], "focal_length": 50},
+  "environment": {"type": "HDRI", "preset": "clear_sky"},
+  "lighting": [],
+  "objects": [
+    {"name": "Subject", "primitive": "SPHERE", "location": [0, 0, 1], "scale": [1.2, 1.2, 1.2], "material": {"preset": "chrome"}},
+    {"name": "Ground", "primitive": "PLANE", "location": [0, 0, 0], "scale": [10, 10, 1], "material": {"base_color": [0.3, 0.3, 0.32]}}
+  ],
+  "render_settings": {"samples": 128, "resolution_x": 900, "resolution_y": 600}
+}

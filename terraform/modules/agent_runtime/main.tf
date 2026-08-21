@@ -36,6 +36,21 @@ locals {
   header_config = length(var.request_header_allowlist) > 0 ? {
     requestHeaderAllowlist = var.request_header_allowlist
   } : null
+  
+  # Build environment variables configuration (only if env vars are specified)
+  env_vars_config = length(var.environment_variables) > 0 ? var.environment_variables : null
+  
+  # Build complete CLI input JSON
+  cli_input = merge(
+    {
+      agentRuntimeName               = local.runtime_name
+      roleArn                        = var.agent_runtime_role_arn
+      agentRuntimeArtifact           = local.artifact_config
+      capacityProviderConfiguration  = local.capacity_config
+    },
+    local.header_config != null ? { requestHeaderConfiguration = local.header_config } : {},
+    local.env_vars_config != null ? { environmentVariables = local.env_vars_config } : {}
+  )
 }
 
 # Write JSON configs to files (avoids shell quoting issues)
@@ -55,9 +70,21 @@ resource "local_file" "header_config" {
   filename = "${path.module}/.terraform/header_${local.runtime_name}.json"
 }
 
+resource "local_file" "env_vars_config" {
+  count    = local.env_vars_config != null ? 1 : 0
+  content  = jsonencode(local.env_vars_config)
+  filename = "${path.module}/.terraform/env_vars_${local.runtime_name}.json"
+}
+
+# Complete CLI input file for create-agent-runtime
+resource "local_file" "cli_input" {
+  content  = jsonencode(local.cli_input)
+  filename = "${path.module}/.terraform/cli_input_${local.runtime_name}.json"
+}
+
 # Create agent runtime
 resource "null_resource" "agent_runtime" {
-  depends_on = [local_file.artifact_config, local_file.capacity_config, local_file.header_config]
+  depends_on = [local_file.cli_input]
   
   triggers = {
     name                 = local.runtime_name
@@ -69,10 +96,8 @@ resource "null_resource" "agent_runtime" {
     python_runtime       = var.python_runtime
     entry_point          = join(",", var.agent_entry_point)
     header_allowlist     = join(",", var.request_header_allowlist)
-    # File paths for cleanup
-    artifact_file        = local_file.artifact_config.filename
-    capacity_file        = local_file.capacity_config.filename
-    header_file          = length(local_file.header_config) > 0 ? local_file.header_config[0].filename : ""
+    env_vars             = jsonencode(var.environment_variables)
+    cli_input_file       = local_file.cli_input.filename
   }
 
   provisioner "local-exec" {
@@ -102,30 +127,11 @@ resource "null_resource" "agent_runtime" {
         fi
       fi
       
-      # Read JSON configs from files
-      ARTIFACT_JSON=$(cat "${local_file.artifact_config.filename}")
-      CAPACITY_JSON=$(cat "${local_file.capacity_config.filename}")
-      
-      # Build and execute the create command
-      %{if local.header_config != null}
-      HEADER_JSON=$(cat "${local_file.header_config[0].filename}")
+      # Create using CLI input JSON file
       RESPONSE=$(aws bedrock-agentcore-control create-agent-runtime \
-        --agent-runtime-name '${local.runtime_name}' \
-        --role-arn '${var.agent_runtime_role_arn}' \
-        --agent-runtime-artifact "$ARTIFACT_JSON" \
-        --capacity-provider-configuration "$CAPACITY_JSON" \
-        --request-header-configuration "$HEADER_JSON" \
+        --cli-input-json "file://${local_file.cli_input.filename}" \
         --region ${data.aws_region.current.region} \
         --output json)
-      %{else}
-      RESPONSE=$(aws bedrock-agentcore-control create-agent-runtime \
-        --agent-runtime-name '${local.runtime_name}' \
-        --role-arn '${var.agent_runtime_role_arn}' \
-        --agent-runtime-artifact "$ARTIFACT_JSON" \
-        --capacity-provider-configuration "$CAPACITY_JSON" \
-        --region ${data.aws_region.current.region} \
-        --output json)
-      %{endif}
       
       echo "$RESPONSE" > /tmp/agent_runtime_${local.runtime_name}.json
       

@@ -1,0 +1,13 @@
+{
+  "_description": "Phase 2 capability fixture: exercises environment.type SKY with an explicit preset, plus the render_settings color-management fields. One plain subject + large ground plane (not a compound scene) so the sky's own contribution is easy to see without other lighting competing -- see fixtures/regr_skyscraper.json's history for what happens when a strong manual light or tight framing hides the sky's effect entirely.",
+  "camera": {"location": [7.0, -6.0, 5.0], "rotation": [1.15, 0.0, 0.8], "focal_length": 50, "sensor_width": 36},
+  "environment": {"type": "SKY", "preset": "golden_hour"},
+  "lighting": [],
+  "objects": [
+    {"name": "Subject", "primitive": "SPHERE", "location": [0.0, 0.0, 1.0], "scale": [1.2, 1.2, 1.2],
+     "material": {"name": "SubjectMat", "base_color": [0.8, 0.8, 0.85], "metallic": 0.05, "roughness": 0.15}},
+    {"name": "Ground", "primitive": "PLANE", "location": [0.0, 0.0, 0.0], "scale": [15.0, 15.0, 1.0],
+     "material": {"name": "GroundMat", "base_color": [0.3, 0.3, 0.32], "metallic": 0.0, "roughness": 0.5}}
+  ],
+  "render_settings": {"samples": 128, "resolution_x": 1280, "resolution_y": 720, "view_transform": "Khronos PBR Neutral"}
+}

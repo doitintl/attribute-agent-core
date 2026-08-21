@@ -1,0 +1,12 @@
+{
+  "_description": "Phase 6 capability fixture: material.preset='office_facade' -- a straight (non-offset) TexBrick grid splitting Base Color/Roughness/Metallic into frame-vs-glass regions, plus a per-window-cell noise-driven emission mask so some windows read as lit at night, others dark. Found and fixed two real bugs via this fixture, neither by inspection: (1) Blender's Noise texture is degenerate at exact integer coordinates -- feeding it a bare floor()'d cell index rendered as one perfectly flat, uniform value across the whole surface (confirmed via an isolated gradient test), fixed by sampling the cell *center* (floor + 0.5); (2) a ColorRamp CONSTANT-interpolation element was moved to the wrong index -- moving elements[0] instead of elements[1] left the actual threshold stranded at its default position 1.0, so effectively every Fac value landed in the 'dark' segment and every single window rendered unlit, which looked exactly like 'the emission chain doesn't work at all' until isolated with a hardcoded Fac value.",
+  "camera": {"location": [7.0, -6.0, 5.0], "rotation": [1.15, 0.0, 0.8], "focal_length": 50},
+  "environment": {"type": "COLOR", "color": [0.02, 0.02, 0.04], "strength": 0.15},
+  "lighting": [],
+  "objects": [
+    {"name": "Tower", "primitive": "CUBE", "location": [0, 0, 3], "scale": [2, 2, 3],
+     "material": {"preset": "office_facade", "pitch_h": 0.5, "pitch_v": 0.4, "lit_fraction": 0.4}},
+    {"name": "Ground", "primitive": "PLANE", "location": [0, 0, 0], "scale": [10, 10, 1], "material": {"base_color": [0.15, 0.15, 0.16]}}
+  ],
+  "render_settings": {"samples": 128, "resolution_x": 900, "resolution_y": 700}
+}

@@ -1,0 +1,16 @@
+{
+  "_description": "Phase 4 capability fixture: an AREA key light offset well away from the subject (aim_at defaults to origin), a SPOT light with a narrow cone, and lighting_rig fallback is exercised separately by omitting lighting[] entirely in a copy of this fixture -- see fixtures/README.md. Confirmed via direct before/after render: without aim_at, an offset light like OffsetKey only illuminates the ground below itself and leaves the subject nearly flat-lit by ambient alone.",
+  "camera": {"location": [7.0, -6.0, 5.0], "rotation": [1.15, 0.0, 0.8]},
+  "environment": {"type": "COLOR", "color": [0.02, 0.02, 0.03], "strength": 0.05},
+  "lighting": [
+    {"type": "AREA", "name": "OffsetKey", "location": [6.0, -1.0, 3.0], "energy": 2000, "size": 3.0, "color": [1.0, 0.95, 0.85]},
+    {"type": "SPOT", "name": "NarrowSpot", "location": [-3.0, -3.0, 4.0], "energy": 1500, "spot_size_deg": 25, "spot_blend": 0.3, "color": [0.6, 0.7, 1.0]}
+  ],
+  "objects": [
+    {"name": "Subject", "primitive": "CUBE", "location": [0, 0, 1], "scale": [1.3, 1.3, 1.3],
+     "material": {"base_color": [0.7, 0.7, 0.75], "metallic": 0.1, "roughness": 0.3}},
+    {"name": "Ground", "primitive": "PLANE", "location": [0, 0, 0], "scale": [10, 10, 1],
+     "material": {"base_color": [0.3, 0.3, 0.32], "metallic": 0.0, "roughness": 0.6}}
+  ],
+  "render_settings": {"samples": 128, "resolution_x": 1280, "resolution_y": 720}
+}

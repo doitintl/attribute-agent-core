@@ -1,0 +1,13 @@
+{
+  "_description": "Phase 9 capability fixture: camera.look_at (aims at a specific point instead of a hand-typed rotation, verified against the 'Focus' sphere) plus depth-of-field (dof_enabled, f_stop, auto-derived focus_distance from the look_at target). 'Near' and 'Far' spheres are placed at clearly different camera distances (not just lateral offsets -- DOF blur is proportional to depth difference, not screen-space position, confirmed by an earlier test scene that had no visible blur because its three spheres were nearly equidistant from the camera).",
+  "camera": {"location": [0.0, -10.0, 1.0], "look_at": [0.0, 0.0, 1.0], "dof_enabled": true, "f_stop": 0.5, "focal_length": 85},
+  "environment": {"type": "SKY", "preset": "golden_hour"},
+  "lighting": [],
+  "objects": [
+    {"name": "Near", "primitive": "SPHERE", "location": [-1.0, -6.0, 1], "scale": [0.5, 0.5, 0.5], "material": {"base_color": [0.8, 0.2, 0.2], "roughness": 0.3}},
+    {"name": "Focus", "primitive": "SPHERE", "location": [0.0, 0.0, 1], "scale": [0.5, 0.5, 0.5], "material": {"base_color": [0.2, 0.8, 0.2], "roughness": 0.3}},
+    {"name": "Far", "primitive": "SPHERE", "location": [1.0, 6.0, 1], "scale": [0.5, 0.5, 0.5], "material": {"base_color": [0.2, 0.2, 0.8], "roughness": 0.3}},
+    {"name": "Ground", "primitive": "PLANE", "location": [0, 0, 0], "scale": [10, 10, 1], "material": {"base_color": [0.4, 0.4, 0.42]}}
+  ],
+  "render_settings": {"samples": 128, "resolution_x": 900, "resolution_y": 500}
+}

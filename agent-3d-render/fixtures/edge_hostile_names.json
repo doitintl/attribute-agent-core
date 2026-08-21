@@ -1,0 +1,25 @@
+{
+  "_description": "Adversarial names/strings designed to break the old f-string script generator: embedded double-quotes, backslashes, newlines, unicode, and the string 'true' (which used to emit a bare `true` token -> NameError). Verifies the JSON-payload/repr handoff in blender_runtime.py makes this whole injection class structurally impossible. Also exercises lowercase type/primitive values (normalize_scene must uppercase+whitelist them) and a light with size set on a non-AREA type (must be silently ignored, not error).",
+  "camera": {"location": [7.0, -6.0, 5.0], "rotation": [1.1, 0.0, 0.8]},
+  "environment": {"type": "COLOR", "color": [0.05, 0.05, 0.08], "strength": 0.3},
+  "lighting": [
+    {"type": "area", "name": "Key \"Light\" \\ with \\backslashes", "location": [4.0, -3.0, 6.0], "energy": 1000, "size": 5.0},
+    {"type": "point", "name": "☃ Unicode Snowman Light", "location": [-2.0, -5.0, 3.0], "energy": 500, "size": 999}
+  ],
+  "objects": [
+    {
+      "name": "Weird\"Object'Name\nwith a newline and \\backslash and unicode ☃",
+      "primitive": "cube",
+      "location": [0.0, 0.0, 1.0],
+      "scale": [2.0, 1.0, 0.5],
+      "material": {"name": "true", "base_color": [0.8, 0.1, 0.1], "metallic": 0.9, "roughness": 0.1}
+    },
+    {
+      "name": "SQL-ish; DROP TABLE objects; --",
+      "primitive": "SPHERE",
+      "location": [3.0, 0.0, 1.0],
+      "material": {"name": "false", "base_color": [0.1, 0.8, 0.1]}
+    }
+  ],
+  "render_settings": {"samples": 32, "resolution_x": 320, "resolution_y": 240}
+}

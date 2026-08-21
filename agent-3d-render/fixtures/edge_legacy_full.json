@@ -1,0 +1,78 @@
+{
+  "_description": "Exact copy of generate_scene_description()'s template scene, frozen as of the Phase 0 refactor (JSON-payload handoff, blender_runtime.py extraction). Purpose: prove the refactor from f-string generation to the JSON-payload/blender_runtime.py handoff is a visual no-op. Render this fixture before and after any change to the render pipeline and diff -- a difference here that isn't an intentional new-phase feature is a regression.",
+  "camera": {
+    "location": [7.0, -6.0, 5.0],
+    "rotation": [1.1, 0.0, 0.8],
+    "focal_length": 50,
+    "sensor_width": 36
+  },
+  "lighting": [
+    {
+      "type": "AREA",
+      "name": "KeyLight",
+      "location": [4.0, -3.0, 6.0],
+      "energy": 1000,
+      "size": 5.0,
+      "color": [1.0, 0.95, 0.9]
+    },
+    {
+      "type": "AREA",
+      "name": "FillLight",
+      "location": [-3.0, 2.0, 4.0],
+      "energy": 300,
+      "size": 3.0,
+      "color": [0.9, 0.95, 1.0]
+    },
+    {
+      "type": "POINT",
+      "name": "RimLight",
+      "location": [-2.0, -5.0, 3.0],
+      "energy": 500,
+      "color": [1.0, 1.0, 1.0]
+    }
+  ],
+  "environment": {
+    "type": "COLOR",
+    "color": [0.05, 0.05, 0.08],
+    "strength": 0.3
+  },
+  "objects": [
+    {
+      "name": "MainSubject",
+      "type": "MESH",
+      "primitive": "CUBE",
+      "location": [0.0, 0.0, 1.0],
+      "scale": [2.0, 1.0, 0.5],
+      "material": {
+        "name": "SubjectMaterial",
+        "base_color": [0.8, 0.1, 0.1],
+        "metallic": 0.9,
+        "roughness": 0.1,
+        "specular": 0.8
+      }
+    },
+    {
+      "name": "Ground",
+      "type": "MESH",
+      "primitive": "PLANE",
+      "location": [0.0, 0.0, 0.0],
+      "scale": [20.0, 20.0, 1.0],
+      "material": {
+        "name": "GroundMaterial",
+        "base_color": [0.2, 0.2, 0.2],
+        "metallic": 0.0,
+        "roughness": 0.3,
+        "specular": 0.5
+      }
+    }
+  ],
+  "render_settings": {
+    "engine": "CYCLES",
+    "device": "GPU",
+    "samples": 256,
+    "resolution_x": 1920,
+    "resolution_y": 1080,
+    "use_denoising": true,
+    "denoiser": "OPTIX"
+  }
+}

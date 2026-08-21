@@ -1,0 +1,14 @@
+{
+  "_description": "Phase 7 capability fixture: multiple stacked/layered transmissive glass surfaces (3 glass panes in a row plus a glass cube) -- exercises the auto-escalated bounce settings (max_bounces/transmission_bounces/transparent_max_bounces -> 24, blur_glossy -> 1.0) triggered by normalize_scene detecting material.transmission > 0 anywhere in the scene. Without this escalation, light passing through several glass surfaces runs out of Blender's default 12 bounces and renders black past the 12th surface -- confirmed this does NOT happen here even with 4 transmissive objects in the camera's view path. Also exercises the auto-SOLIDIFY on the PLANE panes (a zero-thickness plane can't properly refract).",
+  "camera": {"location": [7.0, -6.0, 5.0], "rotation": [1.15, 0.0, 0.8], "focal_length": 50},
+  "environment": {"type": "SKY", "preset": "golden_hour"},
+  "lighting": [],
+  "objects": [
+    {"name": "GlassPane1", "primitive": "PLANE", "location": [-1.0, 0, 1.5], "rotation": [90, 0, 0], "scale": [0.8, 1.0, 1], "material": {"preset": "glass"}},
+    {"name": "GlassPane2", "primitive": "PLANE", "location": [0.0, 0, 1.5], "rotation": [90, 0, 0], "scale": [0.8, 1.0, 1], "material": {"preset": "glass"}},
+    {"name": "GlassPane3", "primitive": "PLANE", "location": [1.0, 0, 1.5], "rotation": [90, 0, 0], "scale": [0.8, 1.0, 1], "material": {"preset": "glass"}},
+    {"name": "GlassBox", "primitive": "CUBE", "location": [3.0, 0, 1], "material": {"preset": "glass"}},
+    {"name": "Ground", "primitive": "PLANE", "location": [0, 0, 0], "scale": [10, 10, 1], "material": {"base_color": [0.6, 0.2, 0.2]}}
+  ],
+  "render_settings": {"samples": 200, "resolution_x": 1000, "resolution_y": 600}
+}

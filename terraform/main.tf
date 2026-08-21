@@ -213,6 +213,7 @@ module "agent_runtime" {
   request_header_allowlist  = var.request_header_allowlist
   session_idle_timeout      = var.session_idle_timeout
   session_max_duration      = var.session_max_duration
+  environment_variables     = var.agent_environment_variables
 
   depends_on = [module.capacity_provider, module.agent_artifact]
 }

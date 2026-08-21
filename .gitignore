@@ -1,7 +1,75 @@
-container-deploy/*
-zip-sensor-spike/__pycache__/launcher.cpython-314.pyc
-zip-sensor-spike/.build/weather-saas-zip-sensor.zip
-zip-sensor-spike/.build/.runtime-arn
-zip-sensor-spike/.build/.key
-zip-sensor-spike/.build/.bucket
-container-deploy/
+# =============================================================================
+# Python
+# =============================================================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+ENV/
+env/
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# =============================================================================
+# Terraform
+# =============================================================================
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.template
+.terraform.lock.hcl
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Terraform module build artifacts
+terraform/modules/agent_artifact/.build/
+terraform/modules/agent_runtime/.terraform/
+
+# =============================================================================
+# Agent Build Artifacts
+# =============================================================================
+agent-3d-render/.build-zip/
+agent-3d-render/.venv/
+agent-3d-render/.blender/
+agent-3d-render/fixtures/
+
+# Test results (regenerated on each run)
+agent-3d-render/scripts/tenant_test_results.json
+
+# =============================================================================
+# Lambda
+# =============================================================================
+lambda/__pycache__/
+
+# =============================================================================
+# Spike/Experimental
+# =============================================================================
+zip-sensor-spike/__pycache__/
+zip-sensor-spike/.build/
+
+# =============================================================================
+# IDE / Editor
+# =============================================================================
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# =============================================================================
+# Logs
+# =============================================================================
+*.log
+logs/
+docs/agentcore-ec2-sensor-deployment.drawio

@@ -4,8 +4,13 @@
 # Stores the DoiT Attribute sensor token in AWS Secrets Manager
 # =============================================================================
 
+# Random suffix to avoid conflicts with secrets scheduled for deletion
+resource "random_id" "secret_suffix" {
+  byte_length = 3
+}
+
 resource "aws_secretsmanager_secret" "sensor_token" {
-  name        = var.secret_name
+  name        = "${var.secret_name}-${random_id.secret_suffix.hex}"
   description = "DoiT Attribute sensor token for AgentCore instances"
 
   tags = {
