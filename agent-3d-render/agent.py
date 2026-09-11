@@ -74,7 +74,7 @@ OUTPUT_S3_PREFIX = os.environ.get("OUTPUT_S3_PREFIX", "render3d-agent/outputs")
 # Where the curated HDRI catalog (blender_runtime.HDRI_CATALOG) is pre-staged by Terraform
 # (aws_s3_object.hdri) -- see hdri_assets/README.md. Defaults to the same deployment bucket the
 # agent zip itself lives in, since it's already granted to this role.
-HDRI_S3_BUCKET = os.environ.get("HDRI_S3_BUCKET", "agentcore-deployments-058264544288")
+HDRI_S3_BUCKET = os.environ.get("HDRI_S3_BUCKET", "")
 HDRI_S3_PREFIX = os.environ.get("HDRI_S3_PREFIX", "render3d-agent/hdri")
 HDRI_CACHE_DIR = os.environ.get("HDRI_CACHE_DIR", "/tmp/hdri-cache")
 _hdri_ready = {}  # name -> True | error message, tri-state cache per catalog name
@@ -483,7 +483,15 @@ def _install_blender_locked() -> Optional[str]:
         archive_path = os.path.join(tempfile.gettempdir(), f"blender-{uuid.uuid4().hex}.tar.xz")
         try:
             url = f"https://download.blender.org/release/Blender4.2/blender-{BLENDER_VERSION}-linux-x64.tar.xz"
-            subprocess.run(["wget", "-q", url, "-O", archive_path], check=True, timeout=300)
+            # -4: some AgentCore capacity-provider instances have a second, AWS-managed network
+            # interface with a real IPv6 default route that doesn't actually reach the public
+            # internet. DNS still returns AAAA records for download.blender.org, and plain wget
+            # tries those first with no fast fallback, so an unpatched wget here hangs until its
+            # own timeout before ever trying IPv4 -- confirmed by directly reproducing the hang
+            # on a live AgentCore instance and tracing it to that interface's routing table.
+            # This has nothing to do with the sensor installer's own IPv4 fix elsewhere in this
+            # repo; that Lambda may not even be deployed, so this call needs its own protection.
+            subprocess.run(["wget", "-4", "-q", url, "-O", archive_path], check=True, timeout=300)
             subprocess.run(["tar", "-xf", archive_path, "-C", staging_dir], check=True, timeout=120)
             if os.path.isdir(BLENDER_INSTALL_DIR):
                 shutil.rmtree(staging_dir, ignore_errors=True)  # someone else already won

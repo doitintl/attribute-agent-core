@@ -91,6 +91,19 @@ request_header_allowlist = ["x-tenant-id"]
 session_idle_timeout = 900   # 15 minutes
 session_max_duration  = 86400 # 24 hours
 
+# Environment variables passed to the agent runtime. OUTPUT_S3_BUCKET is where finished
+# renders get uploaded (required for renders to be retrievable after the ephemeral EC2
+# instance tears down); HDRI_S3_BUCKET is where the curated HDRI catalog is pre-staged
+# (see agent-3d-render/hdri_assets/README.md) -- both must already exist and be granted
+# to the agent runtime role. Leaving either unset disables that feature gracefully rather
+# than failing renders (uploads are skipped / HDRI falls back to a procedural sky).
+agent_environment_variables = {
+  OUTPUT_S3_BUCKET = "your-artifacts-bucket"
+  OUTPUT_S3_PREFIX = "render3d-agent/outputs"
+  HDRI_S3_BUCKET   = "your-artifacts-bucket"
+  HDRI_S3_PREFIX   = "render3d-agent/hdri"
+}
+
 # -----------------------------------------------------------------------------
 # Attribute Sensor Configuration
 # -----------------------------------------------------------------------------

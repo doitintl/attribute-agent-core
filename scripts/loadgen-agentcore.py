@@ -36,10 +36,12 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(mess
 logger = logging.getLogger("agentcore-loadgen")
 
 # Configuration
-AGENT_RUNTIME_ARN = os.environ.get(
-    "AGENT_RUNTIME_ARN",
-    "arn:aws:bedrock-agentcore:us-east-1:058264544288:runtime/weatherSaasAgent-kHby5SE5ju"
-)
+AGENT_RUNTIME_ARN = os.environ.get("AGENT_RUNTIME_ARN")
+if not AGENT_RUNTIME_ARN:
+    raise SystemExit(
+        "Set AGENT_RUNTIME_ARN to the runtime you want to load-test, e.g.:\n"
+        "  export AGENT_RUNTIME_ARN=arn:aws:bedrock-agentcore:us-east-1:<ACCOUNT_ID>:runtime/<NAME>"
+    )
 RATE_MULTIPLIER = float(os.environ.get("RATE_MULTIPLIER", "0.2"))
 SESSION_ID = os.environ.get("SESSION_ID", f"loadgen-session-{uuid.uuid4().hex}")
 REGION = os.environ.get("AWS_REGION", "us-east-1")

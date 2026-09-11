@@ -49,10 +49,20 @@ This demonstrates how to build a multi-tenant AI application where costs can be 
 
 1. **Terraform** >= 1.5.0
 2. **AWS CLI** >= 2.36 (for AgentCore commands)
-3. **DoiT Attribute token** from the Attribute Dashboard
+3. **DoiT Attribute token** from the [Attribute Dashboard](https://console.doit.com) (Setup > API Tokens)
 4. **S3 bucket** for agent code artifacts
 5. **jq** installed locally (for Terraform external data sources)
-6. **GPU instance capacity** in your AWS account (g5 family)
+6. **GPU instance capacity** in your AWS account (g5 family) — most accounts start at 0 vCPU
+   quota for on-demand G/VT instances and need a quota increase request before `terraform apply`
+   will succeed. Check your current limit first:
+   ```bash
+   aws service-quotas get-service-quota \
+     --service-code ec2 \
+     --quota-code L-DB2E81BA \
+     --region us-west-2
+   ```
+   If it's `0`, request an increase in the Service Quotas console (EC2 -> "Running On-Demand G
+   and VT instances") before deploying — approval can take anywhere from minutes to a day.
 7. **EC2 Managed Resource Visibility** must be enabled:
    ```bash
    aws ec2 modify-managed-resource-visibility --region us-west-2 --default-visibility visible
@@ -109,6 +119,28 @@ terraform apply
 
 By default, Terraform automatically builds the agent code from the `agent-3d-render/` directory, packages it with dependencies, and uploads it to S3. To use a pre-existing artifact instead, set `build_agent_artifact = false` and specify `agent_s3_key`.
 
+### 4. Invoke the Agent
+
+```bash
+# Get the runtime ARN from Terraform output
+RUNTIME_ARN=$(terraform output -raw agent_runtime_arn)
+
+# Invoke with a render request
+aws bedrock-agentcore invoke-agent-runtime \
+  --agent-runtime-arn "$RUNTIME_ARN" \
+  --qualifier DEFAULT \
+  --runtime-session-id "session-$(uuidgen)" \
+  --payload '{"prompt": "A red sports car in a showroom with dramatic lighting"}' \
+  --content-type application/json \
+  --region us-west-2
+```
+
+The first invocation against a fresh capacity provider triggers a cold start (new EC2 instance,
+Blender + shared-lib install) and can take a few minutes; subsequent calls in the same
+`--runtime-session-id` reuse the warm instance and return in seconds. See
+`agent-3d-render/scripts/tenant_test.py` for a multi-tenant example that also sets the
+`x-tenant-id` header.
+
 ## Configuration Variables
 
 ### General
@@ -152,6 +184,57 @@ By default, Terraform automatically builds the agent code from the `agent-3d-ren
 | `sensor_token` | DoiT Attribute token | **Required** |
 | `sensor_workload_name` | Workload name in Attribute | `3d-render-agent` |
 | `sensor_memory_limit` | Sensor memory limit (bytes) | `524288000` (500MB) |
+
+## Troubleshooting
+
+### Sensor installation failed
+
+Check the Lambda logs for the install attempt:
+```bash
+aws logs tail /aws/lambda/render3d-sensor-installer --since 10m --region us-west-2
+```
+Also check the SSM command output directly, which shows the actual install script output
+(the most common historical cause was a wget IPv6/IPv4 DNS-resolution hang — see the comments
+in `lambda/index.py`'s `install_sensor()` if installs are timing out rather than erroring):
+```bash
+aws ssm list-commands --region us-west-2 --instance-id <instance-id>
+aws ssm get-command-invocation --region us-west-2 --command-id <command-id> --instance-id <instance-id>
+```
+
+### SSM Run Command not executing
+
+Verify the instance's SSM agent is actually online before the Lambda's install command can run:
+```bash
+aws ssm describe-instance-information --region us-west-2 \
+  --filters "Key=InstanceIds,Values=<instance-id>"
+```
+
+### Agent not responding / invocation hangs
+
+Check the AgentCore runtime and capacity provider status:
+```bash
+aws bedrock-agentcore-control get-agent-runtime \
+  --agent-runtime-id <runtime-id> \
+  --region us-west-2
+```
+A cold start (new EC2 instance provisioning + Blender install) can take a few minutes on the
+first request against a given session — this is expected, not a hang. Check CloudWatch logs for
+the runtime to see where a request actually is in that startup sequence.
+
+## Cost Estimate
+
+Running this demo incurs real AWS + Bedrock charges. Approximate costs (us-west-2, on-demand):
+
+| Resource | Approximate Cost |
+|----------|------------------|
+| `g5.xlarge` EC2 instance | ~$1.00/hr (only while a capacity-provider instance is running) |
+| Bedrock Claude tokens | ~$0.003-0.015 per 1K tokens, model-dependent |
+| Lambda invocations (sensor installer) | < $0.01 |
+| S3 storage (renders, HDRIs, agent artifact) | < $0.01/GB-month |
+
+**Tip:** Set `capacity_max = 1` and a short `session_idle_timeout` (e.g. `300`) in
+`terraform.tfvars` while testing, so idle GPU instances get torn down quickly instead of running
+up cost between requests.
 
 ## Directory Structure
 

@@ -169,7 +169,7 @@ module "lambda" {
   lambda_role_arn    = module.iam.lambda_execution_role_arn
   workload_name      = var.sensor_workload_name
   memory_limit       = var.sensor_memory_limit
-  secret_name        = var.sensor_secret_name
+  secret_name        = module.secrets.secret_name
   lambda_source_dir  = local.lambda_source_dir
   lambda_timeout     = var.lambda_timeout
   lambda_memory_size = var.lambda_memory_size
